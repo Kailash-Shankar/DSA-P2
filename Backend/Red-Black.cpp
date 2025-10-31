@@ -159,10 +159,10 @@ class Red_Black{
                     
                 } else {                                // Uncle is black
                    if (Parent->right == root){            // Left-Right Case
-                    RotateLeft(Parent);    
+                    Parent = RotateLeft(Parent);    
                     
                    }
-                   RotateRight(Grandparent);              // Left-left Case
+                   Grandparent = RotateRight(Grandparent);              // Left-left Case
                    setcolor(Parent, 0);
                    setcolor(Grandparent, 1);
                  
@@ -182,27 +182,23 @@ class Red_Black{
 
     }
 
-    Node* search(int zip, Node* root = nullptr, bool first_call = true){
-        if (root == nullptr){
-            if (first_call){
-                root = this->root;
-                
-            } else {
-                return nullptr;
-            }
-        }
-
+    Node* search(int zip){
+        Node* curr = root;
+        while (curr){
+           
         if (zip > root->zip){
-            return search(zip, root->right, false);
+            curr = curr->right;
         }
-
         else if (zip < root->zip){
-            return search(zip, root->left, false);
+            curr = curr->left;
+        } 
+        else {
+            return curr;
         }
 
-        else {
-            return root;
-        }
+        return nullptr;
+
+    }
 
     }
 
@@ -233,7 +229,7 @@ int main(){
      tree.insert(1, v, 44.0); 
       tree.insert(2, v, 44.0); 
        tree.insert(63, v, 44.0); 
-    Node* r = tree.search(7);
+    Node* r = tree.search(7);   
     cout << r->price << endl;
 
 
