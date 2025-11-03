@@ -93,15 +93,11 @@
             node->parent = temp;
             return temp;
         }
-    
 
-
-        
 
         void insert(int zip, vector<string> info, float price){
             Node* New = insertRecursion(zip, info, price, this->root); //Insert nodes
             this->root = Rebalance(New);  // Maintain invariants
-            
             setcolor(this->root, 0);  // Root is always black 
         }
 
@@ -175,7 +171,6 @@
                 } 
             } 
         
-
     }
             while (node->parent != nullptr){
                 node = node->parent;
@@ -200,10 +195,7 @@
             }
 
             else {return root;} //Unlikely to happen in data
-            
-      
-
-            
+        
 
         return root;
 
@@ -268,12 +260,12 @@
         vector<string> v = {"a", "b", "c", "d"};
         
         
-        for (int i=0; i< 4; i++){
+        for (int i=0; i< 10000; i++){
         tree.insert(i, v, (float)i*2);
        
         }
     
-        cout << tree.search(1)->price << endl;
+        cout << tree.search(9999)->price << endl;
 
         return 0;
     }
