@@ -63,42 +63,125 @@
             node->right = temp->left;    // Link node to temp->left
             if (temp->left) temp->left->parent = node; // Link temp->left to node
             temp->parent = node->parent;
-            if (!node->parent) {
-            this->root = temp;
-            } else if (node->parent->left == node){ // Node is a left child
+           
+            if (node->parent){
+            if (node->parent->left == node){ // Node is a left child
                 node->parent->left = temp;
             } else { // Node is a right child
                 node->parent->right = temp;
             }
+        }
             temp->left = node;   // Connect node to temp
             node->parent = temp;
             return temp;
         }
 
         Node* RotateRight(Node* node){
-        Node* temp = node->left;
+            Node* temp = node->left;
             node->left = temp->right;    // Link root to temp->right
             if (temp->right) temp->right->parent = node; // Link temp->right to root
             temp->parent = node->parent;
-            if (!node->parent) {
-            this->root = temp;
-            } else if (node->parent->right == node){ // Node is a left child
+            
+            if (node->parent){
+            if (node->parent->right == node){ // Node is a left child
                 node->parent->right = temp;
             } else { // Node is a right child
                 node->parent->left = temp;
             }
+        }
             temp->right = node;   // Connect node to temp
             node->parent = temp;
             return temp;
         }
+    
+
+
+        
 
         void insert(int zip, vector<string> info, float price){
-            this->root = insertRecursion(zip, info, price, this->root);
+            Node* New = insertRecursion(zip, info, price, this->root); //Insert nodes
+            this->root = Rebalance(New);  // Maintain invariants
+            
+            setcolor(this->root, 0);  // Root is always black 
+        }
 
-            // Root is always black
-            if (root && root->isRed){
-                root->isRed = false;
+
+        Node* Rebalance(Node* node){
+           
+            
+            while (node != this->root && IsRed(node->parent)){  // Check for consecutive red nodes - child and parent are red
+            Node* Parent = node->parent;
+            Node* Grandparent = Parent ? Parent->parent : nullptr;
+
+            if (!Grandparent) return Parent;
+            
+                if (Grandparent->right == Parent){   // Uncle is on left side
+                    Node* Uncle = Grandparent->left;
+                    if (IsRed(Uncle)){ // Uncle is red - Color Flip
+                        setcolor(Parent, 0);
+                        setcolor(Grandparent, 1);
+                        setcolor(Uncle, 0);
+                        node = Grandparent;      // Propagate upwards
+                        continue;                
+                        
+                    
+                    } else {                                // Uncle is black - Rotation
+                    if (Parent->left == node){            // Right-Left Case
+                        Parent = RotateRight(Parent);
+                        Grandparent->right = Parent;
+                        Parent->parent = Grandparent;    
+                    
+                    }
+                    Node* New = RotateLeft(Grandparent);              // Right-Right Case
+        
+
+                    setcolor(New, 0);
+                    setcolor(New->left, 1);
+                    while (New->parent != nullptr){            // Done here - go back up and return root
+                        New = New->parent;
+                    }
+                    return New;              
+                    
+                    
+                    }
+                        
+                }
+                else {  // Uncle is on right side
+                    Node* Uncle = Grandparent->right;
+                    if (IsRed(Uncle)){ //    Uncle is red - Color Flip
+                        setcolor(Parent, 0);
+                        setcolor(Grandparent, 1);
+                        setcolor(Uncle, 0);
+                        node = Grandparent;                 // Propagate upwards
+                        continue;
+                        
+                        
+                    } else {                                // Uncle is black - Rotation
+                    if (Parent->right == node){            // Left-Right Case
+                        Parent = RotateLeft(Parent);    
+                        Grandparent->left = Parent;
+                        Parent->parent = Grandparent;  
+                    }
+                    Node* New = RotateRight(Grandparent);              // Left-left Case
+                    setcolor(New, 0);
+                    setcolor(New->right, 1);
+                    while (New->parent != nullptr){                   // Done here - go back up and return root
+                        New = New->parent;
+                    }
+                    return New;            
+                        
+                    
+            
+                } 
+            } 
+        
+
+    }
+            while (node->parent != nullptr){
+                node = node->parent;
             }
+
+            return node;
         }
 
         Node* insertRecursion(int zip, vector<string> info, float price, Node* root, Node* par = nullptr ){
@@ -106,104 +189,51 @@
                 return new Node(zip, info, price, par);
                 }
             
-
             if (zip > root->zip){
                 root->right = insertRecursion(zip, info, price, root->right, root);
+                if (root->right) {root->right->parent = root;}   // Safety
             }
 
             else if (zip < root->zip){
                 root->left = insertRecursion(zip, info, price, root->left, root);
-
+                if (root->left) {root->left->parent = root;}
             }
 
             else {return root;} //Unlikely to happen in data
             
-            //Rebalancing------------------------------------------------------------------------------------------------------
-            
-        
-            
-            
-            
-            Node* Parent = root->parent;
-            Node* Grandparent = Parent ? Parent->parent : nullptr;
-            if (!Parent || !Grandparent) return root;
-            
-            
-            if (IsRed(root) && IsRed(Parent)){  // Check for consecutive red nodes - current and parent are red
-                if (Grandparent->right == Parent){   // Left uncle case
-                    Node* Uncle = Grandparent->left;
-                    if (IsRed(Uncle)){ // Uncle is red
-                        setcolor(Parent, 0);
-                        setcolor(Grandparent, 1);
-                        setcolor(Uncle, 0);
-                        return root;
-                        
-                    
-                    } else {                                // Uncle is black
-                    if (Parent->left == root){            // Right-Left Case
-                        Parent = RotateRight(Parent);    
-                    
-                    }
-                    Node* New = RotateLeft(Grandparent);              // Right-Right Case
-                    setcolor(New, 0);
-                    setcolor(New->left, 1);
-                    return New;
-                    
-                    }
-                        
-                }
-                else {  // Right uncle case
-                    Node* Uncle = Grandparent->right;
-                    if (IsRed(Uncle)){ //    Uncle is red
-                        setcolor(Parent, 0);
-                        setcolor(Grandparent, 1);
-                        setcolor(Uncle, 0);
-                        return root;
-                        
-                        
-                    } else {                                // Uncle is black
-                    if (Parent->right == root){            // Left-Right Case
-                        Parent = RotateLeft(Parent);    
-                        
-                    }
-                    Node* New = RotateRight(Grandparent);              // Left-left Case
-                    setcolor(New, 0);
-                    setcolor(New->right, 1);
-                    return New;                
-                        
-                    
-            
-                } 
-            } 
-        }
+      
+
             
 
         return root;
 
 
-
-        }
-
-        Node* search(int zip){
-            Node* curr = root;
-            while (curr){
-            
-            if (zip > curr->zip){
-                curr = curr->right;
-            }
-            else if (zip < curr->zip){
-                curr = curr->left;
-            } 
-            else {
-                return curr;
-            }
-        }
-
-            return nullptr;
-
-        }
+       
+    }
 
         
+    Node* search(int zip){ 
+        Node* curr = root; 
+        while (curr){
+            if (zip > curr->zip){ 
+                curr = curr->right; 
+            } 
+            else if (zip < curr->zip){
+                curr = curr->left; 
+                    
+            } else {
+                return curr; 
+                } 
+                    
+            } 
+            return nullptr; 
+                
+        }
+
+        //Implementation:
+        // Node* n = search(zip)
+        // if (n) {output n->price;}
+
 
         void Delete_All(Node* root){
             if (root == nullptr){
@@ -216,6 +246,9 @@
 
             delete root;
         }
+
+
+
 
         ~Red_Black(){
             Delete_All(root);
@@ -233,20 +266,14 @@
         //Testing
         Red_Black tree;
         vector<string> v = {"a", "b", "c", "d"};
-        tree.insert(5, v, 2.5); 
-        tree.insert(7, v, 44.0); 
-        tree.insert(1, v, 44.0); 
-        tree.insert(2, v, 44.0); 
-        tree.insert(63, v, 44.0); 
-        Node* r = tree.search(7);   
-        cout << r->price << endl;
-
-        tree.insert(5, v, 2.5);
-        tree.insert(7, v, 44.0);
-        tree.insert(1, v, 44.0);
-        tree.insert(2, v, 44.0);
-        tree.insert(63, v, 44.0);
+        
+        
+        for (int i=0; i< 4; i++){
+        tree.insert(i, v, (float)i*2);
+       
+        }
     
+        cout << tree.search(1)->price << endl;
 
         return 0;
     }
