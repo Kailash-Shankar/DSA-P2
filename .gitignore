@@ -1,0 +1,17 @@
+node_modules/
+.next/
+src/node_modules/
+src/.next/
+*.log
+.env*
+node_modules/
+.next/
+src/node_modules/
+src/.next/
+
+node_modules/
+.next/
+src/node_modules/
+src/.next/
+.env*
+*.log
