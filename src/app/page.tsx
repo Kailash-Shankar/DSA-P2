@@ -17,9 +17,9 @@ export default function Home() {
     setError("")
     setResults(null)
 
-    // Simulate API call to backend (Red-Black Tree or B-Tree search)
+    
     setTimeout(() => {
-      // Mock data - in production, this would call your backend
+      // BACKEND CONNECTION HERE
       const mockData: Record<string, any> = {
         "10001": {
           state: "New York",
