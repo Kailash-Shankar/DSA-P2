@@ -254,18 +254,18 @@
 
 
 
-    int main(){
-        //Testing
-        Red_Black tree;
-        vector<string> v = {"a", "b", "c", "d"};
+    // int main(){
+    //     //Testing
+    //     Red_Black tree;
+    //     vector<string> v = {"a", "b", "c", "d"};
         
         
-        for (int i=0; i< 10000; i++){
-        tree.insert(i, v, (float)i*2);
+    //     for (int i=0; i< 10000; i++){
+    //     tree.insert(i, v, (float)i*2);
        
-        }
+    //     }
     
-        cout << tree.search(9999)->price << endl;
+    //     cout << tree.search(9999)->price << endl;
 
-        return 0;
-    }
+    //     return 0;
+    // }
