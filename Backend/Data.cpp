@@ -59,7 +59,7 @@ while (getline(file, discard, ',')){
     tree.insert(stoi(zip), info, stof(price));
 
 
-    // if (count == 1000) break;
+    if (count == 1000) break;
     
     
 }
