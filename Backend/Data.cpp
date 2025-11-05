@@ -94,13 +94,21 @@ while (getline(file, discard, ',')){
      
     
     getline(file, price);
-   
-    //cout << zip << info[0] << " " << info[1] << " " << info[2] <<" " << info[3] << price << endl;
+
     
+    float default = 100000.000;
+   
+    try {
     tree.insert(stoi(zip), info, stof(price));
+} catch (const std::exception &e) {
+    
+    tree.insert(stoi(zip), info, default);  // Handle typos/formatting issues in dataset
+    
+    continue;
+}
 
 
-    if (count == 1000) break;
+    
     
     
 }

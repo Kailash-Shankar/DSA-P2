@@ -3,6 +3,8 @@
 import { useState } from "react"
 import SearchCard from "./search-card"
 import ResultsCard from "./results-card"
+import Image from "next/image"
+import house from "./house.png"
 
 export default function Home() {
   const [zipCode, setZipCode] = useState("")
@@ -58,7 +60,10 @@ export default function Home() {
       <div className="px-[100px] py-12">
         {/* Header */}
         <div className="mb-12">
+          <div className="flex items-center justify-center mb-6">
+          <Image src={house} alt="House" width={120} height={120} className="rounded-lg" />
           <h1 className="text-5xl font-bold text-slate-900 mb-4 text-center">Home Price Estimator</h1>
+          </div>
           <p className="text-xl text-slate-600 text-center">
             Search by zip code to discover average home prices and location details across the US
           </p>
