@@ -41,8 +41,14 @@ export default function SearchCard({ onSearch, loading, treeType }: SearchCardPr
     <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-8">
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-2xl font-bold text-slate-900">Search Properties</h2>
-        <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-          {treeType === "red-black" ? "Red-Black Tree" : "B-Tree"}
+        <span
+        className={ `text-xs font-semibold px-3 py-1 rounded-full
+    ${treeType === "red-black"
+      ? "text-red-600 bg-red-100"
+      : "text-green-600 bg-green-100"
+    }`}
+    >
+{treeType === "red-black" ? "Red-Black Tree" : "B-Tree"}
         </span>
       </div>
 
@@ -99,25 +105,8 @@ export default function SearchCard({ onSearch, loading, treeType }: SearchCardPr
         </Button>
       </form>
 
-      {/* Example Zip Codes */}
-      <div className="mt-8 pt-8 border-t border-slate-200">
-        <p className="text-sm text-slate-600 font-medium mb-3">Try these examples:</p>
-        <div className="space-y-2">
-          {["10001", "90210", "77001", "60601"].map((code) => (
-            <button
-              key={code}
-              onClick={() => {
-                setInput(code)
-                setInputError("")
-              }}
-              disabled={loading}
-              className="block w-full text-left px-3 py-2 rounded-md text-sm text-blue-600 hover:bg-blue-50 transition-colors disabled:text-slate-400 disabled:hover:bg-transparent"
-            >
-              {code}
-            </button>
-          ))}
-        </div>
-      </div>
+     
+      
     </div>
   )
 }

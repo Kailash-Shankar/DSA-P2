@@ -8,8 +8,10 @@ interface ResultsCardProps {
     city: string
     metro: string
     county: string
+    time: number
     avgPrice: number
   } | null
+  
   loading: boolean
   error: string
   zipCode: string
@@ -18,8 +20,16 @@ interface ResultsCardProps {
 export default function ResultsCard({ results, loading, error, zipCode }: ResultsCardProps) {
   return (
     <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-8">
-      <h2 className="text-2xl font-bold text-slate-900 mb-6">Results</h2>
+        <div className="flex items-center justify-between mb-6">
 
+        <h2 className="text-2xl font-bold text-slate-900">
+        Results
+        </h2>
+      {results && (
+          <p className="text-sm text-slate-600"> 
+          Retrieved in <span className="font-semibold">{results?.time?.toFixed(6) ?? "0.000000"}</span> seconds
+          </p> )}
+      </div>
       {!zipCode && !loading && !error && (
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <Home className="h-12 w-12 text-slate-300 mb-4" />
@@ -36,7 +46,7 @@ export default function ResultsCard({ results, loading, error, zipCode }: Result
 
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-800 font-medium">{error}</p>
+          <p className="text-red-800 font-medium">Zip Code not found in dataset</p>
           <p className="text-red-700 text-sm mt-1">Please verify the zip code and try again</p>
         </div>
       )}
