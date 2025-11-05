@@ -260,12 +260,12 @@
     //     vector<string> v = {"a", "b", "c", "d"};
         
         
-    //     for (int i=0; i< 10000; i++){
-    //     tree.insert(i, v, (float)i*2);
+    //     // for (int i=0; i< 10000; i++){
+    //     // tree.insert(i, v, (float)i*2);
        
-    //     }
+    //     //}
     
-    //     cout << tree.search(9999)->price << endl;
+    //     cout << tree.search(77024)->price << endl;
 
     //     return 0;
     // }
