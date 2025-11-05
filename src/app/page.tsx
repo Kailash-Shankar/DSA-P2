@@ -17,48 +17,41 @@ export default function Home() {
     setError("")
     setResults(null)
 
-    // Simulate API call to backend (Red-Black Tree or B-Tree search)
-    setTimeout(() => {
-      // Mock data - in production, this would call your backend
-      const mockData: Record<string, any> = {
-        "10001": {
-          state: "New York",
-          city: "New York",
-          metro: "New York-Newark-Jersey City",
-          county: "New York",
-          avgPrice: 895000,
-        },
-        "90210": {
-          state: "California",
-          city: "Beverly Hills",
-          metro: "Los Angeles-Long Beach-Anaheim",
-          county: "Los Angeles",
-          avgPrice: 3250000,
-        },
-        "77001": {
-          state: "Texas",
-          city: "Houston",
-          metro: "Houston-The Woodlands-Sugar Land",
-          county: "Harris",
-          avgPrice: 385000,
-        },
-        "60601": {
-          state: "Illinois",
-          city: "Chicago",
-          metro: "Chicago-Naperville-Elgin",
-          county: "Cook",
-          avgPrice: 425000,
-        },
+
+    try{
+      console.log("Fetching from backend:", `http://localhost:8080/node/${code}`)
+
+      const response = await fetch(`http://localhost:8080/node/${code}`)
+
+      console.log("Response status:", response.status)
+
+      if (!response.ok){
+        throw new Error('No data found for zip ${code}')
+
       }
 
-      if (mockData[code]) {
-        setResults(mockData[code])
-      } else {
-        setError(`No data found for zip code: ${code}`)
-      }
-      setLoading(false)
-    }, 800)
+      const data = await response.json()
+    console.log("Received data:", data)
+
+    setResults({
+      state: data.info[0],
+      city: data.info[1],
+      metro: data.info[2],
+      county: data.info[3],
+      avgPrice: parseFloat(data.price),
+      time: data.time
+    }
+  )
+
   }
+  catch (err) {
+    
+    setError(err instanceof Error ? err.message : `No data found for zip code: ${code}`)
+    setResults(null)
+  } finally {
+    setLoading(false)
+  }
+}
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
@@ -78,7 +71,7 @@ export default function Home() {
               <button
                 onClick={() => setTreeType("red-black")}
                 className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
-                  treeType === "red-black" ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  treeType === "red-black" ? "bg-red-600 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                 }`}
               >
                 Red-Black Tree
@@ -86,7 +79,7 @@ export default function Home() {
               <button
                 onClick={() => setTreeType("b-tree")}
                 className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
-                  treeType === "b-tree" ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  treeType === "b-tree" ? "bg-green-600 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                 }`}
               >
                 B-Tree
