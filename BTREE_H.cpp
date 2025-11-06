@@ -8,13 +8,13 @@
 class BTree{
 public:
     struct Record{
-        int zip;
-        double price;
+        int zip{};
+        double price{};
         std::string info;
     };
 
     //Constructor
-    BTree(int minDegree) : root(nullptr), t(minDegree)
+    explicit BTree(const int minDegree) : root(nullptr), t(minDegree)
     {
         if(t<2){//minDegree validation
             throw std::invalid_argument("B-Tree minimum degree must be at least 2.");
@@ -29,8 +29,8 @@ public:
     BTree& operator=(const BTree&) = delete;
     
     //Inserting a new record
-    void insert(int zip, double price, const std::string& info){
-        Record rec{zip, price, info};
+    void insert(const int zip, const double price, const std::string& info){
+        const Record rec{zip, price, info};
 
         if(root==nullptr){//Makes new root if tree is empty
             root = new Node(true, t);
@@ -38,8 +38,8 @@ public:
             return;
         }
 
-        if((int)root->records.size() == 2*t-1){ //root is full, increase height of tree
-            Node* newRoot = new Node(false, t);
+        if(static_cast<int>(root->records.size()) == 2*t-1){ //root is full, increase height of tree
+            const auto newRoot = new Node(false, t);
             newRoot->children.push_back(root);
             split(newRoot, 0);
 
@@ -52,12 +52,12 @@ public:
     }
 
     //checking if zip exists in the tree
-    bool search(int zip) const{
+    [[nodiscard]] bool search(const int zip) const{
         const Record* res=search(root, zip);
         return(res!=nullptr);
     }
 
-    const Record* find(int zip) const{
+    [[nodiscard]] const Record* find(const int zip) const{
         return search(root, zip);
     }
 
@@ -67,7 +67,7 @@ private:
         std::vector<Record> records;     
         std::vector<Node*> children;
 
-        Node(bool isLeaf, int minDegree) : leaf(isLeaf)
+        Node(const bool isLeaf, const int minDegree) : leaf(isLeaf)
         {
             //this is just to avoid reallocation 
             records.reserve(2*minDegree-1);
@@ -90,14 +90,14 @@ private:
     }
 
     //helper for search
-    const Record* search(Node* node, int zip) const {
+    const Record* search(const Node* node, const int zip) const {
         if (node==nullptr) return nullptr;
 
         int i=0;
-        while (i<(int)node->records.size() && zip>node->records[i].zip) 
+        while (i<static_cast<int>(node->records.size()) && zip>node->records[i].zip) 
         { ++i; }
 
-        if(i<(int)node->records.size() && zip==node->records[i].zip) {
+        if(i<static_cast<int>(node->records.size()) && zip==node->records[i].zip) {
             return &node->records[i];
         }
 
@@ -105,15 +105,15 @@ private:
             return nullptr; 
         }
 
-        return search(node->children[i], zip);
+        return search(static_cast<const Node*>(node->children[i]), zip);
     }
 
-    void split(Node* parent, int childIndex){
+    void split(Node* parent, const int childIndex){
         Node* xChild=parent->children[childIndex];
-        Node* newChild=new Node(xChild->leaf, t);
+        const auto newChild=new Node(xChild->leaf, t);
 
-        int mid= t-1;
-        Record midRecord= xChild->records[mid];
+        const int mid= t-1;
+        const Record midRecord= xChild->records[mid];
 
         newChild->records.assign(xChild->records.begin()+t, xChild->records.end());
         xChild->records.resize(t-1);
@@ -132,7 +132,7 @@ private:
 
     //inserting a record into a node that is not full
     void insertNotFull(Node* node, const Record& rec){
-        int i=(int)node->records.size()-1;
+        int i=static_cast<int>(node->records.size())-1;
 
         if(node->leaf){
             node->records.push_back(rec);
@@ -150,7 +150,7 @@ private:
             }++i;//index where record goes
 
             //if child is full, split
-            if((int)node->children[i]->records.size()== 2*t-1){
+            if(static_cast<int>(node->children[i]->records.size())== 2*t-1){
                 split(node, i);
 
                 if (rec.zip > node->records[i].zip) {++i;}
@@ -159,5 +159,5 @@ private:
             insertNotFull(node->children[i], rec);
         }
     }
-}
+};
 #endif //BTREE_H
