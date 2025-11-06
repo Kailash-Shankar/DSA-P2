@@ -28,6 +28,27 @@ public:
     BTree(const BTree&) = delete;
     BTree& operator=(const BTree&) = delete;
     
+    //Inserting a new record
+    void insert(int zip, double price, const std::string& info){
+        Record rec{zip, price, info};
+
+        if(root==nullptr){//Makes new root if tree is empty
+            root = new Node(true, t);
+            root->records.push_back(rec);
+            return;
+        }
+
+        if((int)root->records.size() == 2*t-1){ //root is full, increase height of tree
+            Node* newRoot = new Node(false, t);
+            newRoot->children.push_back(root);
+            split(newRoot, 0);
+
+            int i=0;
+            if(rec.zip > newRoot->records[0].zip) { i=1;}
+            insertNotFull(newRoot->children[i], rec);
+            root=newRoot;
+        } 
+        else{insertNotFull(root, rec);}
     }
 
     //checking if zip exists in the tree
@@ -87,4 +108,56 @@ private:
         return search(node->children[i], zip);
     }
 
+    void split(Node* parent, int childIndex){
+        Node* xChild=parent->children[childIndex];
+        Node* newChild=new Node(xChild->leaf, t);
+
+        int mid= t-1;
+        Record midRecord= xChild->records[mid];
+
+        newChild->records.assign(xChild->records.begin()+t, xChild->records.end());
+        xChild->records.resize(t-1);
+
+        if (!xChild->leaf) {
+            newChild->children.assign(
+                xChild->children.begin() + t,
+                xChild->children.end()
+            );
+            xChild->children.resize(t);
+        }
+
+        parent->children.insert(parent->children.begin()+ childIndex +1, newChild);
+        parent->records.insert(parent->records.begin()+childIndex, midRecord);
+    }
+
+    //inserting a record into a node that is not full
+    void insertNotFull(Node* node, const Record& rec){
+        int i=(int)node->records.size()-1;
+
+        if(node->leaf){
+            node->records.push_back(rec);
+
+            while(i>=0 && rec.zip<node->records[i].zip){
+                node->records[i+1] = node->records[i]; //right shift
+                --i;
+            }
+            node->records[i + 1] = rec;
+        } 
+        else{
+            //find the child to go down into
+            while (i >= 0 && rec.zip < node->records[i].zip){
+            --i;
+            }++i;//index where record goes
+
+            //if child is full, split
+            if((int)node->children[i]->records.size()== 2*t-1){
+                split(node, i);
+
+                if (rec.zip > node->records[i].zip) {++i;}
+            }
+
+            insertNotFull(node->children[i], rec);
+        }
+    }
+}
 #endif //BTREE_H
