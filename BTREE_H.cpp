@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <stdexcept>
 
 class BTree{
 public:
@@ -14,12 +15,19 @@ public:
 
     //Constructor
     BTree(int minDegree) : root(nullptr), t(minDegree)
-    {}
+    {
+        if(t<2){//minDegree validation
+            throw std::invalid_argument("B-Tree minimum degree must be at least 2.");
+        }
+    }
 
     //destructor
     ~BTree() {
         clear(root);
     }
+    BTree(const BTree&) = delete;
+    BTree& operator=(const BTree&) = delete;
+    
     }
 
     //checking if zip exists in the tree
