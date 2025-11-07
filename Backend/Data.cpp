@@ -9,26 +9,36 @@
 #include <iomanip>
 using namespace std;
 
-Red_Black tree; // Declare tree
+Red_Black RB; // Declare trees
+BTree B(3);
 
-vector<string> fetch_data(int zip, double& dur){
+vector<string> fetch_data(int zip, double& dur, bool isRB){
 
     auto start = std::chrono::high_resolution_clock::now();
 
 
     cout << "searching..." << endl;
-    Node* n = tree.search(zip);
+    Node* n = nullptr;
+    if (isRB){
+        n = RB.search(zip);
+        cout << "RB tree!" << endl;
+     } else {
+         cout << "B tree!" << endl;
+        const BTree::Record* r = B.find(zip);
+        if (r)
+        n = new Node(r->zip, r->info, r->price);
+     }
 
     
-    
-    
-
     vector<string> res;
     if (n) {
         cout << "FOUND in tree!" << " price:" << n->price << endl;
         res.push_back(to_string(n->price));
         for (auto i : n->info)
         res.push_back(i);
+
+        delete n;
+
         
 
 } else cout << "NOT FOUND in tree!" << endl;
@@ -38,9 +48,6 @@ vector<string> fetch_data(int zip, double& dur){
     std::chrono::duration<double> duration = end - start;
     
     dur = duration.count();
-
-
-
 
 
 return res;
@@ -96,15 +103,15 @@ while (getline(file, discard, ',')){
     getline(file, price);
 
     
-    float default = 100000.000;
+    float Default = 100000.000;
    
     try {
-    tree.insert(stoi(zip), info, stof(price));
+    RB.insert(stoi(zip), info, stof(price));
+    B.insert(stoi(zip), info, stof(price));
 } catch (const std::exception &e) {
     
-    tree.insert(stoi(zip), info, default);  // Handle typos/formatting issues in dataset
-    
-    continue;
+    RB.insert(stoi(zip), info, Default);  // Handle typos/formatting issues in dataset
+    B.insert(stoi(zip), info, Default);
 }
 
 
@@ -138,12 +145,15 @@ httplib::Server svr;
 svr.Get(R"(/node/(\d+))", [](const httplib::Request& req, httplib::Response& res) {
     
     int zip = stoi(req.matches[1].str());
+
+    string type = req.get_param_value("tree");
+    cout << type << endl;
     
     cout << "Request for zip: " << zip << endl;
     
     
     double dur = 0;
-    vector<string> result = fetch_data(zip, dur);
+    vector<string> result = fetch_data(zip, dur, type=="red-black");
     
     if (result.empty()) {
         res.status = 404;

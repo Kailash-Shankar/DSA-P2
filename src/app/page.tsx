@@ -23,7 +23,7 @@ export default function Home() {
     try{
       console.log("Fetching from backend:", `http://localhost:8080/node/${code}`)
 
-      const response = await fetch(`http://localhost:8080/node/${code}`)
+      const response = await fetch(`http://localhost:8080/node/${code}?tree=${treeType}`)
 
       console.log("Response status:", response.status)
 
