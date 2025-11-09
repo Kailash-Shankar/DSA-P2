@@ -11,7 +11,7 @@ Introducing Home Price Estimator, a quick and easy-to-use web application that a
 This product utilizes two data structures, a **Red-Black Tree** and a **B Tree** coded in a C++ backend, as well as a React frontend and httplib to create a backend server that connects to the frontend.
 
 # Setup Instructions
-Clone this repository, and then follow the following steps to set up and run the application.
+Fork this repository, and then follow the following steps to set up and run the application.
 
 # Step 1: Download Visual Studio 
 Download Visual Studio 2022 Community [here](https://visualstudio.microsoft.com/downloads/). This is necessary in order for the backend server to work.
